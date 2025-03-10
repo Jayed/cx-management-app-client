@@ -244,7 +244,7 @@ const ManageTransaction = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               {/* date  */}
               <div className="flex-1">
-                <label className="block text-gray-600 text-sm font-medium mb-1">
+                <label className="block text-cyan-900 text-sm font-medium mb-1">
                   Date
                 </label>
                 <input
@@ -257,7 +257,7 @@ const ManageTransaction = () => {
               </div>
               {/* customer  */}
               <div className="flex-1">
-                <label className="block text-gray-600 text-sm font-medium mb-1">
+                <label className="block text-cyan-900 text-sm font-medium mb-1">
                   Customer
                 </label>
                 <select
@@ -280,7 +280,7 @@ const ManageTransaction = () => {
 
             {/* Row 2: Description (Auto-Expanding) */}
             <div>
-              <label className="block text-gray-600 text-sm font-medium mb-1">
+              <label className="block text-cyan-900 text-sm font-medium mb-1">
                 Description
               </label>
               <textarea
@@ -301,7 +301,7 @@ const ManageTransaction = () => {
             <div className="flex flex-col md:flex-row gap-4">
               {/* debit  */}
               <div className="flex-1">
-                <label className="block text-gray-600 text-sm font-medium mb-1">
+                <label className="block text-cyan-900 text-sm font-medium mb-1">
                   Debit ($)
                 </label>
                 <input
@@ -314,7 +314,7 @@ const ManageTransaction = () => {
               </div>
               {/* credit  */}
               <div className="flex-1">
-                <label className="block text-gray-600 text-sm font-medium mb-1">
+                <label className="block text-cyan-900 text-sm font-medium mb-1">
                   Credit ($)
                 </label>
                 <input
@@ -357,7 +357,7 @@ const ManageTransaction = () => {
           <table className="table w-full">
             {/* Table Head */}
             <thead>
-              <tr className="bg-blue-400">
+              <tr className="bg-blue-400 text-cyan-900">
                 <th className="px-4 py-2">#</th>
                 <th className="px-4 py-2">Customer</th>
                 <th className="px-4 py-2">Details</th>
@@ -374,7 +374,7 @@ const ManageTransaction = () => {
                 (tx, index) => (
                   <tr
                     key={tx._id}
-                    className={index % 2 === 0 ? "bg-white" : "bg-gray-200"}
+                    className={`${index % 2 === 0 ? "bg-white" : "bg-gray-200"} text-cyan-900`}
                   >
                     <td className="px-4 py-2">{index + 1}</td>
                     <td className="px-4 py-2">{tx.customer.name}</td>

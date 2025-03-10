@@ -229,7 +229,7 @@ const ManageCustomer = () => {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {/* Name */}
             <div>
-              <label className="block text-gray-600 text-sm font-medium mb-1">
+              <label className="block text-cyan-900 text-sm font-medium mb-1">
                 Name
               </label>
               <input
@@ -244,7 +244,7 @@ const ManageCustomer = () => {
 
             {/* Mobile */}
             <div>
-              <label className="block text-gray-600 text-sm font-medium mb-1">
+              <label className="block text-cyan-900 text-sm font-medium mb-1">
                 Mobile
               </label>
               <input
@@ -259,7 +259,7 @@ const ManageCustomer = () => {
 
             {/* Address */}
             <div>
-              <label className="block text-gray-600 text-sm font-medium mb-1">
+              <label className="block text-cyan-900 text-sm font-medium mb-1">
                 Address
               </label>
               <textarea
@@ -303,7 +303,7 @@ const ManageCustomer = () => {
           <table className="table w-full">
             {/* Table Head */}
             <thead>
-              <tr className="bg-blue-400">
+              <tr className="bg-blue-400 text-cyan-900">
                 <th className="px-4 py-2">#</th>
                 <th className="px-4 py-2">Customer Name</th>
                 <th className="px-4 py-2">Mobile</th>
@@ -318,7 +318,9 @@ const ManageCustomer = () => {
                 (cust, index) => (
                   <tr
                     key={cust._id}
-                    className={index % 2 === 0 ? "bg-white" : "bg-gray-200"}
+                    className={`${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-200"
+                    } text-cyan-900`}
                   >
                     <td className="px-4 py-2">{index + 1}</td>
                     <td className="px-4 py-2">{cust.name}</td>
