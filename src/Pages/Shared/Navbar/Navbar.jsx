@@ -37,7 +37,7 @@ const Navbar = () => {
             <li>
               <Link to="/" className="hover:text-blue-600">
                 <FaHome className="font-bold text-lg text-blue-400" />
-                Home
+                <span className="text-cyan-900">Home</span>
               </Link>
             </li>
             {/* Customer  */}
@@ -46,9 +46,8 @@ const Navbar = () => {
                 to="/manage-customers"
                 className="hover:text-blue-600 flex items-center"
               >
-                <FaUsers className="font-bold text-lg text-blue-400" />{" "}
-                {/* Add the icon */}
-                Customers
+                <FaUsers className="font-bold text-lg text-blue-400" />
+                <span className="text-cyan-900">Customers</span>
               </Link>
             </li>
             {/* Services  */}
