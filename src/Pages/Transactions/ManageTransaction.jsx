@@ -195,27 +195,7 @@ const ManageTransaction = () => {
       }
     });
   };
-
-  // Handle delete
-  // const handleDelete = async (id) => {
-  //   Swal.fire({
-  //     title: "Are you sure?",
-  //     text: "This action cannot be undone!",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Yes, Delete it!",
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       try {
-  //         await axiosPublic.delete(`/transactions/${id}`);
-  //         SetPaginationVariables();
-  //         Swal.fire("Deleted!", "Transaction has been deleted.", "success");
-  //       } catch (error) {
-  //         Swal.fire("Error!", "Failed to delete transaction.", "error");
-  //       }
-  //     }
-  //   });
-  // };
+  // Handle Delete
   const handleDelete = async (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -230,7 +210,7 @@ const ManageTransaction = () => {
       if (result.isConfirmed) {
         try {
           await axiosPublic.delete(`/transactions/${id}`);
-          refetch(); // Refresh transaction 
+          refetch(); // Refresh transaction
           Swal.fire({
             title: "Deleted!",
             text: "Transaction has been deleted.",
@@ -356,49 +336,6 @@ const ManageTransaction = () => {
           </form>
         </div>
       </div>
-
-      {/* Search and Take Action Transactions
-      <div className="w-full mx-auto p-4 bg-base-100 shadow-lg rounded-lg mb-6">
-        <h2 className="text-2xl font-semibold mb-4 text-blue-500">
-          Search Transactions (
-          {filteredTransactions.length || transactions.length})
-        </h2>
-
-        <input
-          type="text"
-          placeholder="Search Transaction by customer name and date"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="input input-bordered w-full mb-4"
-        />
-
-        <ul className="space-y-2">
-          {(searchTerm ? filteredTransactions : currentItems).map((tx) => (
-            <li key={tx._id} className="p-4 bg-base-200 rounded-lg">
-              <p>
-                <strong>{tx.customer.name}</strong> - {tx.details}
-              </p>
-              <p>
-                Date: {tx.date} | Debit: ${tx.debit} | Credit: ${tx.credit}
-              </p>
-              <button
-                onClick={() => handleEdit(tx)}
-                className="btn btn-sm btn-outline btn-primary"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(tx._id)}
-                className="btn btn-sm btn-outline btn-error ml-2"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        <Pagination pageCount={pageCount} onPageChange={handlePageClick} />
-      </div> */}
       {/* Search and Take Action Transactions */}
       <div className="w-full mx-auto p-4 bg-base-100 shadow-lg rounded-lg mb-6">
         {/* Heading  */}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import useCustomers from "../../../Hooks/useCustomers";
+import useCustomers from "../../Hooks/useCustomers";
 
 const Customers = () => {
   // Fetch customers using the custom hook

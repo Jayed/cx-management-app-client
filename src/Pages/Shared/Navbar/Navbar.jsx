@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { FaHome, FaHistory, FaUsers } from "react-icons/fa"; // Import the icons
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -39,28 +40,39 @@ const Navbar = () => {
                   : "opacity-0 scale-95 hidden"
               }`}
             >
+              {/* Home */}
               <li>
                 <Link
                   to="/"
                   onClick={() => setIsDropdownOpen(false)}
-                  className="hover:bg-gray-200 p-2 block"
+                  className="hover:bg-gray-200 p-2 block flex items-center"
                 >
-                  Home
+                  <FaHome className="font-bold text-lg text-blue-400 mr-2" />{" "}
+                  {/* Icon */}
+                  <span>Home</span> {/* Text */}
                 </Link>
               </li>
+
+              {/* Customers */}
               <li>
                 <Link
-                  to="/customers"
+                  to="/manage-customers"
                   onClick={() => setIsDropdownOpen(false)}
-                  className="hover:bg-gray-200 p-2 block"
+                  className="hover:bg-gray-200 p-2 block flex items-center"
                 >
-                  Customers
+                  <FaUsers className="font-bold text-lg text-blue-400 mr-2" />{" "}
+                  {/* Icon */}
+                  <span>Customers</span> {/* Text */}
                 </Link>
               </li>
+
+              {/* Services */}
               <li>
                 <details className="group">
-                  <summary className="hover:bg-gray-200 p-2 block cursor-pointer">
-                    Services
+                  <summary className="hover:bg-gray-200 p-2 block cursor-pointer flex items-center">
+                    <FaHistory className="font-bold text-md text-blue-400 mr-2" />{" "}
+                    {/* Icon */}
+                    <span>Services</span> {/* Text */}
                   </summary>
                   <ul className="pl-4">
                     <li>
@@ -69,7 +81,7 @@ const Navbar = () => {
                         onClick={() => setIsDropdownOpen(false)}
                         className="hover:bg-gray-200 p-2 block"
                       >
-                        Service 1
+                        Export
                       </Link>
                     </li>
                     <li>
@@ -78,7 +90,7 @@ const Navbar = () => {
                         onClick={() => setIsDropdownOpen(false)}
                         className="hover:bg-gray-200 p-2 block"
                       >
-                        Service 2
+                        Import
                       </Link>
                     </li>
                   </ul>
@@ -94,27 +106,39 @@ const Navbar = () => {
         {/* Center - Desktop Menu */}
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-4 space-x-4">
+            {/* Home  */}
             <li>
               <Link to="/" className="hover:text-blue-600">
+                <FaHome className="font-bold text-lg text-blue-400" />
                 Home
               </Link>
             </li>
+            {/* Customer  */}
             <li>
-              <Link to="/customers" className="hover:text-blue-600">
+              <Link
+                to="/manage-customers"
+                className="hover:text-blue-600 flex items-center"
+              >
+                <FaUsers className="font-bold text-lg text-blue-400" />{" "}
+                {/* Add the icon */}
                 Customers
               </Link>
             </li>
+            {/* Services  */}
             <li className="relative group">
-              <button className="hover:text-blue-600">Services</button>
+              <button className="hover:text-blue-600">
+                <FaHistory className="font-bold text-md text-blue-400" />
+                Services
+              </button>
               <ul className="p-2 bg-white shadow-md rounded-lg absolute mt-1 hidden group-hover:block">
                 <li>
                   <Link to="/service1" className="hover:bg-gray-200 p-2 block">
-                    Service 1
+                    Export
                   </Link>
                 </li>
                 <li>
                   <Link to="/service2" className="hover:bg-gray-200 p-2 block">
-                    Service 2
+                    Import
                   </Link>
                 </li>
               </ul>
