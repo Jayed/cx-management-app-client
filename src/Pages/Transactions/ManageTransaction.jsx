@@ -8,36 +8,36 @@ import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 const ManageTransaction = () => {
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // Default current date
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [customer, setCustomer] = useState("");
   const [description, setDescription] = useState("");
-  const [debit, setDebit] = useState("");
-  const [credit, setCredit] = useState("");
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [transactionType, setTransactionType] = useState("expense");
+  // const [amount, setAmount] = useState(0);
+  // const [rate, setRate] = useState(0);
+  // const [quantity, setQuantity] = useState(0);
+  // const [unitPrice, setUnitPrice] = useState(0);
+  const [quantity_amount, setQuantity_amount] = useState();
+  const [unitPrice_rmbRate, setUnitPrice_rmbRate] = useState();
+  const [expense, setExpense] = useState(0);
+  const [deposit, setDeposit] = useState(0);
 
   const axiosPublic = useAxiosPublic();
   const [customers] = useCustomers();
-  // console.log(customer);
-
-  // Need to set transaction in state
   const [transactions, setTransactions] = useState([]);
   const [fetchedTransactions, refetch] = useTransactions();
 
   // Set transactions in state when fetchedTransactions changes
   useEffect(() => {
     if (fetchedTransactions) {
-      // Sort transactions by date in descending order (newest first)
-      const sortedTransactions = fetchedTransactions.sort((a, b) => {
-        return new Date(b.date) - new Date(a.date); // Descending order
-      });
+      const sortedTransactions = fetchedTransactions.sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
       setTransactions(sortedTransactions);
     }
   }, [fetchedTransactions]);
-
-  console.log("Transaction:", transactions);
-  console.log("Transaction length:", transactions.length);
 
   // State for pagination
   const [currentItems, setCurrentItems] = useState([]);
@@ -89,19 +89,27 @@ const ManageTransaction = () => {
     setFilteredTransactions(results);
   }, [searchTerm, transactions]);
 
-  // Handle form submit
+  useEffect(() => {
+    if (transactionType === "expense") {
+      setExpense(quantity_amount * unitPrice_rmbRate);
+    } else {
+      setDeposit(quantity_amount / unitPrice_rmbRate);
+    }
+  }, [quantity_amount, unitPrice_rmbRate, transactionType]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const transactionData = {
-      transactionID: transactions.length + 1, // Auto-increment logic
+      transactionID: transactions.length + 1,
       date,
-      details: description,
       customer,
-      debit: parseFloat(debit) || 0,
-      credit: parseFloat(credit) || 0,
+      details: description,
+      quantity_amount: parseFloat(quantity_amount) || 0,
+      unitPrice_rmbRate: parseFloat(unitPrice_rmbRate) || 0,
+      expense: parseFloat(expense) || 0,
+      deposit: parseFloat(deposit) || 0,
     };
-    console.log("transactionData: ", transactionData);
-
+    console.log(transactionData);
     Swal.fire({
       title: "Confirm Transaction",
       text: "Do you want to save this transaction?",
@@ -113,48 +121,35 @@ const ManageTransaction = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // Editing Transaction
           if (editingTransaction) {
             await axiosPublic.put(
               `/transactions/${editingTransaction._id}`,
               transactionData
             );
-            Swal.fire({
-              title: "Updated!",
-              text: "Transaction has been updated.",
-              icon: "success",
-              confirmButtonColor: "#3085d6", // Set OK button color
-            });
+            Swal.fire("Updated!", "Transaction has been updated.", "success");
           } else {
             await axiosPublic.post(
               "/transactions/create-transaction/",
               transactionData
             );
-            Swal.fire({
-              title: "Added!",
-              text: "Transaction has been recorded.",
-              icon: "success",
-              confirmButtonColor: "#3085d6", // Set OK button color
-            });
+            Swal.fire("Added!", "Transaction has been recorded.", "success");
           }
-
           // Clear form fields
           setDate(new Date().toISOString().split("T")[0]);
           setCustomer("");
           setDescription("");
-          setDebit("");
-          setCredit("");
+          setQuantity_amount("");
+          setUnitPrice_rmbRate("");
+          setExpense(0);
+          setDeposit(0);
           setEditingTransaction(null);
-          // Refetch transactions to update the list
-          refetch(); // Call refetch to reload transactions
+          refetch();
         } catch (error) {
-          console.error("Error submitting transaction:", error);
-          Swal.fire({
-            title: "Error!",
-            text: "Failed to save transaction. Try again.",
-            icon: "error",
-            confirmButtonColor: "#3085d6", // Set OK button color
-          });
+          Swal.fire(
+            "Error!",
+            "Failed to save transaction. Try again.",
+            "error"
+          );
         }
       }
     });
@@ -238,15 +233,11 @@ const ManageTransaction = () => {
           <h2 className="text-2xl font-bold text-center text-primary mb-2">
             {editingTransaction ? "Edit Transaction" : "New Transaction"}
           </h2>
-
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {/* Row 1: Date & Customer */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* date  */}
+            <div className="flex gap-2 sm:gap-4">
+              {/* Date  */}
               <div className="flex-1">
-                <label className="block text-cyan-900 text-sm font-medium mb-1">
-                  Date
-                </label>
+                <label className="block font-medium">Date</label>
                 <input
                   type="date"
                   value={date}
@@ -257,9 +248,7 @@ const ManageTransaction = () => {
               </div>
               {/* customer  */}
               <div className="flex-1">
-                <label className="block text-cyan-900 text-sm font-medium mb-1">
-                  Customer
-                </label>
+                <label className="block font-medium">Customer</label>
                 <select
                   value={customer}
                   onChange={(e) => setCustomer(e.target.value)}
@@ -277,62 +266,102 @@ const ManageTransaction = () => {
                 </select>
               </div>
             </div>
-
-            {/* Row 2: Description (Auto-Expanding) */}
-            <div>
-              <label className="block text-cyan-900 text-sm font-medium mb-1">
-                Description
-              </label>
-              <textarea
-                placeholder="Enter transaction details"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows="2"
-                className="textarea textarea-bordered w-full min-h-[80px] resize-none overflow-hidden"
-                onInput={(e) => {
-                  e.target.style.height = "auto";
-                  e.target.style.height = e.target.scrollHeight + "px";
-                }}
-                required
-              />
-            </div>
-
-            {/* Row 3: Debit & Credit */}
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* debit  */}
+            {/* Description  */}
+            <label className="block font-medium">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="textarea textarea-bordered w-full"
+              required
+            />
+            {/* Transaction Type Row */}
+            <div className="flex gap-2 sm:gap-4">
               <div className="flex-1">
-                <label className="block text-cyan-900 text-sm font-medium mb-1">
-                  Debit ($)
-                </label>
-                <input
-                  type="number"
-                  placeholder="0.00"
-                  value={debit}
-                  onChange={(e) => setDebit(e.target.value)}
-                  className="input input-bordered w-full"
-                />
-              </div>
-              {/* credit  */}
-              <div className="flex-1">
-                <label className="block text-cyan-900 text-sm font-medium mb-1">
-                  Credit ($)
-                </label>
-                <input
-                  type="number"
-                  placeholder="0.00"
-                  value={credit}
-                  onChange={(e) => setCredit(e.target.value)}
-                  className="input input-bordered w-full"
-                />
+                <label className="block font-medium">Transaction Type</label>
+                <select
+                  value={transactionType}
+                  onChange={(e) => setTransactionType(e.target.value)}
+                  className="select select-bordered w-full"
+                >
+                  <option value="expense">Expense</option>
+                  <option value="deposit">Deposit</option>
+                </select>
               </div>
             </div>
 
-            {/* Row 4: Submit Button */}
-            <div className="text-center">
-              <button type="submit" className="btn btn-primary w-full">
-                {editingTransaction ? "Update" : "Add"} Transaction
-              </button>
+            {/* Other Fields in Single Row */}
+            <div className="flex gap-2 sm:gap-4 mt-1">
+              {transactionType === "deposit" ? (
+                <>
+                  <div className="flex-1">
+                    <label className="block font-medium">Amount (Tk)</label>
+                    <input
+                      type="number"
+                      value={quantity_amount}
+                      onChange={(e) => setQuantity_amount(e.target.value)}
+                      className="input input-bordered w-full"
+                      required
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block font-medium">RMB Rate</label>
+                    <input
+                      type="number"
+                      value={unitPrice_rmbRate}
+                      onChange={(e) => setUnitPrice_rmbRate(e.target.value)}
+                      className="input input-bordered w-full"
+                      required
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block font-medium">Deposit</label>
+                    <input
+                      type="number"
+                      value={Number(deposit).toFixed(2)} // Format to 2 decimal places
+                      className="input input-bordered w-full"
+                      readOnly
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex-1">
+                    <label className="block font-medium">Quantity</label>
+                    <input
+                      type="number"
+                      value={quantity_amount}
+                      onChange={(e) => setQuantity_amount(e.target.value)}
+                      className="input input-bordered w-full"
+                      required
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block font-medium">Unit Price</label>
+                    <input
+                      type="number"
+                      value={unitPrice_rmbRate}
+                      onChange={(e) => setUnitPrice_rmbRate(e.target.value)}
+                      className="input input-bordered w-full"
+                      required
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block font-medium">Expense</label>
+                    <input
+                      type="number"
+                      value={expense}
+                      className="input input-bordered w-full"
+                      readOnly
+                    />
+                  </div>
+                </>
+              )}
             </div>
+
+            {/* submit button  */}
+            <button type="submit" className="btn btn-primary w-full">
+              {editingTransaction ? "Update" : "Add"} Transaction
+            </button>
           </form>
         </div>
       </div>
@@ -362,8 +391,10 @@ const ManageTransaction = () => {
                 <th className="px-4 py-2">Customer</th>
                 <th className="px-4 py-2">Details</th>
                 <th className="px-4 py-2">Date</th>
-                <th className="px-4 py-2">Debit</th>
-                <th className="px-4 py-2">Credit</th>
+                <th className="px-4 py-2">Quantity/Amount</th>
+                <th className="px-4 py-2">unitPrice/rmbRate</th>
+                <th className="px-4 py-2">Expense</th>
+                <th className="px-4 py-2">Deposit</th>
                 <th className="px-4 py-2">Actions</th>
               </tr>
             </thead>
@@ -374,7 +405,9 @@ const ManageTransaction = () => {
                 (tx, index) => (
                   <tr
                     key={tx._id}
-                    className={`${index % 2 === 0 ? "bg-white" : "bg-gray-200"} text-cyan-900`}
+                    className={`${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-200"
+                    } text-cyan-900`}
                   >
                     <td className="px-4 py-2">{index + 1}</td>
                     <td className="px-4 py-2">{tx.customer.name}</td>
@@ -388,8 +421,10 @@ const ManageTransaction = () => {
                         })
                         .replace(",", "")}
                     </td>
-                    <td className="px-4 py-2">${tx.debit}</td>
-                    <td className="px-4 py-2">${tx.credit}</td>
+                    <td className="px-4 py-2">${tx.quantity_amount}</td>
+                    <td className="px-4 py-2">${tx.unitPrice_rmbRate}</td>
+                    <td className="px-4 py-2">${tx.expense}</td>
+                    <td className="px-4 py-2">${tx.deposit}</td>
                     <td className="px-4 py-2">
                       <div className="flex space-x-2">
                         {/* Edit Button */}
