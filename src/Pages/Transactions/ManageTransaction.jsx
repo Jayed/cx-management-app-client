@@ -51,6 +51,7 @@ const ManageTransaction = () => {
       SetPaginationVariables();
     }
   }, [transactions, itemOffset]); // Trigger when `transactions` or `itemOffset` changes
+  // console.log(transactions);
 
   const SetPaginationVariables = () => {
     if (transactions?.length > 0) {
@@ -68,7 +69,7 @@ const ManageTransaction = () => {
     setItemOffset(newOffset);
   };
 
-  console.log("current Items: ", currentItems);
+  // console.log("current Items: ", currentItems);
 
   // Search functionality
   useEffect(() => {
@@ -89,18 +90,22 @@ const ManageTransaction = () => {
     setFilteredTransactions(results);
   }, [searchTerm, transactions]);
 
+  // Calculating expense and deposit
   useEffect(() => {
     if (transactionType === "expense") {
       setExpense(quantity_amount * unitPrice_rmbRate);
+      setDeposit(0);
     } else {
       setDeposit(quantity_amount / unitPrice_rmbRate);
+      setExpense(0);
     }
   }, [quantity_amount, unitPrice_rmbRate, transactionType]);
 
+  // handleSubmit
   const handleSubmit = async (e) => {
     e.preventDefault();
     const transactionData = {
-      transactionID: transactions.length + 1,
+      // transactionID: transactions.length + 1,
       date,
       customer,
       details: description,
@@ -109,7 +114,7 @@ const ManageTransaction = () => {
       expense: parseFloat(expense) || 0,
       deposit: parseFloat(deposit) || 0,
     };
-    console.log(transactionData);
+    // console.log(transactionData);
     Swal.fire({
       title: "Confirm Transaction",
       text: "Do you want to save this transaction?",
@@ -227,9 +232,10 @@ const ManageTransaction = () => {
   return (
     <div>
       {/* container - New transaction form  */}
-      <div className="bg-white shadow-lg rounded-lg w-full mx-auto mb-4 pb-2">
+      <div className="bg-white text-cyan-900 shadow-lg rounded-lg w-full mx-auto mb-4 pb-2">
         {/* New Transaction Form */}
         <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg">
+          {/* heading  */}
           <h2 className="text-2xl font-bold text-center text-primary mb-2">
             {editingTransaction ? "Edit Transaction" : "New Transaction"}
           </h2>
@@ -266,12 +272,13 @@ const ManageTransaction = () => {
                 </select>
               </div>
             </div>
-            {/* Description  */}
+            {/* Description */}
             <label className="block font-medium">Description</label>
-            <textarea
+            <input
+              type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="textarea textarea-bordered w-full"
+              className="input input-bordered w-full"
               required
             />
             {/* Transaction Type Row */}
@@ -281,6 +288,17 @@ const ManageTransaction = () => {
                 <select
                   value={transactionType}
                   onChange={(e) => setTransactionType(e.target.value)}
+                  // onChange={(e) => {
+                  //   const selectedType = e.target.value;
+                  //   setTransactionType(selectedType);
+
+                  //   // Reset values when switching transaction type
+                  //   if (selectedType === "deposit") {
+                  //     setExpense(0); // Reset expense
+                  //   } else {
+                  //     setDeposit(0); // Reset deposit
+                  //   }
+                  // }}
                   className="select select-bordered w-full"
                 >
                   <option value="expense">Expense</option>
@@ -293,6 +311,7 @@ const ManageTransaction = () => {
             <div className="flex gap-2 sm:gap-4 mt-1">
               {transactionType === "deposit" ? (
                 <>
+                  {/* deposit */}
                   <div className="flex-1">
                     <label className="block font-medium">Amount (Tk)</label>
                     <input
@@ -324,6 +343,7 @@ const ManageTransaction = () => {
                   </div>
                 </>
               ) : (
+                // Expense
                 <>
                   <div className="flex-1">
                     <label className="block font-medium">Quantity</label>
@@ -349,7 +369,7 @@ const ManageTransaction = () => {
                     <label className="block font-medium">Expense</label>
                     <input
                       type="number"
-                      value={expense}
+                      value={Number(expense).toFixed(2)} // Format to 2 decimal places
                       className="input input-bordered w-full"
                       readOnly
                     />
@@ -367,7 +387,7 @@ const ManageTransaction = () => {
       </div>
       {/* Search and Take Action Transactions */}
       <div className="w-full mx-auto p-4 bg-base-100 shadow-lg rounded-lg mb-6">
-        {/* Heading  */}
+        {/* Search Heading */}
         <h2 className="text-2xl font-semibold mb-4 text-blue-500">
           Transactions History (
           {filteredTransactions.length || transactions.length})
@@ -375,7 +395,7 @@ const ManageTransaction = () => {
         {/* Search Field  */}
         <input
           type="text"
-          placeholder="Search Transaction by customer name and date"
+          placeholder="Search Transaction by Customer Name or Details"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="input input-bordered w-full mb-4"
@@ -386,15 +406,16 @@ const ManageTransaction = () => {
           <table className="table w-full">
             {/* Table Head */}
             <thead>
-              <tr className="bg-blue-400 text-cyan-900">
+              <tr className="bg-blue-400">
                 <th className="px-4 py-2">#</th>
+                <th className="px-4 py-2">Tx-ID</th>
                 <th className="px-4 py-2">Customer</th>
                 <th className="px-4 py-2">Details</th>
                 <th className="px-4 py-2">Date</th>
-                <th className="px-4 py-2">Quantity/Amount</th>
-                <th className="px-4 py-2">unitPrice/rmbRate</th>
-                <th className="px-4 py-2">Expense</th>
-                <th className="px-4 py-2">Deposit</th>
+                <th className="px-4 py-2">Qty/Amt</th>
+                <th className="px-4 py-2">unitP./rmbR.</th>
+                <th className="px-4 py-2">Expense(¥)</th>
+                <th className="px-4 py-2">Deposit(¥)</th>
                 <th className="px-4 py-2">Actions</th>
               </tr>
             </thead>
@@ -407,12 +428,13 @@ const ManageTransaction = () => {
                     key={tx._id}
                     className={`${
                       index % 2 === 0 ? "bg-white" : "bg-gray-200"
-                    } text-cyan-900`}
+                    }`}
                   >
                     <td className="px-4 py-2">{index + 1}</td>
-                    <td className="px-4 py-2">{tx.customer.name}</td>
-                    <td className="px-4 py-2">{tx.details}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2">{tx?.transactionID}</td>
+                    <td className="px-4 py-2">{tx?.customer?.name}</td>
+                    <td className="px-4 py-2">{tx?.details}</td>
+                    {/* <td className="px-4 py-2">
                       {new Date(tx.date)
                         .toLocaleString("en-GB", {
                           day: "2-digit",
@@ -420,11 +442,55 @@ const ManageTransaction = () => {
                           year: "numeric",
                         })
                         .replace(",", "")}
+                    </td> */}
+                    <td className="px-4 py-2">
+                      {tx?.date
+                        ? new Date(tx.date).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })
+                        : "N/A"}
                     </td>
-                    <td className="px-4 py-2">${tx.quantity_amount}</td>
-                    <td className="px-4 py-2">${tx.unitPrice_rmbRate}</td>
-                    <td className="px-4 py-2">${tx.expense}</td>
-                    <td className="px-4 py-2">${tx.deposit}</td>
+                    <td className="px-4 py-2">{tx?.quantity_amount ?? "0"}</td>
+                    <td className="px-4 py-2">
+                      {tx?.unitPrice_rmbRate ?? "0"}
+                    </td>
+                    {/* <td className="px-4 py-2">
+                      <span className="font-medium">
+                        {tx.expense.toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                    </td> */}
+                    <td className="px-4 py-2">
+                      <span className="font-medium">
+                        {tx?.expense
+                          ? tx.expense.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
+                          : "0.00"}
+                      </span>
+                    </td>
+                    {/* <td className="px-4 py-2">
+                      <span className="font-medium">
+                        {tx.deposit.toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                    </td> */}
+                    <td className="px-4 py-2">
+                      <span className="font-medium">
+                        {tx?.deposit
+                          ? tx.deposit.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
+                          : "0.00"}
+                      </span>
+                    </td>
+
                     <td className="px-4 py-2">
                       <div className="flex space-x-2">
                         {/* Edit Button */}

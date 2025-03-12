@@ -5,7 +5,7 @@ const Customers = () => {
   // Fetch customers using the custom hook
   const [customers, refetch, isPending, isError, error] = useCustomers();
 
-  console.log("Fetched customers:", customers); // Debugging
+  // console.log("Fetched customers:", customers); // Debugging
 
   // Ensure customers is always an array
   const customerList = Array.isArray(customers) ? customers : [];

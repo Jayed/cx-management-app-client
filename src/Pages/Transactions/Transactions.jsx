@@ -4,7 +4,7 @@ import useTransactions from "../../Hooks/useTransactions";
 
 const Transactions = () => {
   const { transactions, refetch, isPending, isError, error } = useTransactions();
-  console.log(transactions);
+  // console.log(transactions);
 
   if (isPending) {
     return <p className="text-center text-blue-500">Loading...</p>;

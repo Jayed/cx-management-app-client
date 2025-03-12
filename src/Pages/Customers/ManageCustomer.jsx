@@ -9,6 +9,7 @@ import { MdDelete } from "react-icons/md";
 const ManageCustomer = () => {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,8 +32,8 @@ const ManageCustomer = () => {
     }
   }, [fetchedCustomers]);
 
-  console.log("Customers:", customers);
-  console.log("Customer count:", customers.length);
+  // console.log("Customers:", customers);
+  // console.log("Customer count:", customers.length);
 
   // State for pagination
   const [currentItems, setCurrentItems] = useState([]);
@@ -63,7 +64,7 @@ const ManageCustomer = () => {
     setItemOffset(newOffset);
   };
 
-  console.log("current Items: ", currentItems);
+  // console.log("current Items: ", currentItems);
 
   // Search functionality
   useEffect(() => {
@@ -87,18 +88,14 @@ const ManageCustomer = () => {
   // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Generate a string-based customer ID
-    const customerId = `CUST${customers.length + 1}`;
-
     const customerData = {
-      customerId,
       name,
       mobile,
+      email,
       address,
     };
 
-    console.log("customerData: ", customerData);
+    // console.log("customerData: ", customerData);
 
     Swal.fire({
       title: "Confirm Customer",
@@ -136,6 +133,7 @@ const ManageCustomer = () => {
           // Clear form fields
           setName("");
           setMobile("");
+          setEmail("");
           setAddress("");
           setEditingCustomer(null);
           // Refetch customers to update the list
@@ -256,6 +254,20 @@ const ManageCustomer = () => {
                 required
               />
             </div>
+            {/* Email */}
+            <div>
+              <label className="block text-cyan-900 text-sm font-medium mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                placeholder="Enter email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input input-bordered w-full"
+                required
+              />
+            </div>
 
             {/* Address */}
             <div>
@@ -292,7 +304,7 @@ const ManageCustomer = () => {
         {/* Search Field */}
         <input
           type="text"
-          placeholder="Search Customer by name or mobile"
+          placeholder="Search by Customer Name or Mobile Number"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="input input-bordered w-full mb-4"
@@ -305,8 +317,10 @@ const ManageCustomer = () => {
             <thead>
               <tr className="bg-blue-400 text-cyan-900">
                 <th className="px-4 py-2">#</th>
+                <th className="px-4 py-2">Cx-ID</th>
                 <th className="px-4 py-2">Customer Name</th>
                 <th className="px-4 py-2">Mobile</th>
+                <th className="px-4 py-2">Email</th>
                 <th className="px-4 py-2">Address</th>
                 <th className="px-4 py-2">Actions</th>
               </tr>
@@ -323,8 +337,10 @@ const ManageCustomer = () => {
                     } text-cyan-900`}
                   >
                     <td className="px-4 py-2">{index + 1}</td>
+                    <td className="px-4 py-2">{cust.customerId}</td>
                     <td className="px-4 py-2">{cust.name}</td>
                     <td className="px-4 py-2">{cust.mobile}</td>
+                    <td className="px-4 py-2">{cust.email}</td>
                     <td className="px-4 py-2">{cust.address}</td>
                     <td className="px-4 py-2">
                       <div className="flex space-x-2">
