@@ -166,6 +166,7 @@ const ManageCustomer = () => {
       if (result.isConfirmed) {
         setName(customer.name);
         setMobile(customer.mobile);
+        setEmail(customer.email);
         setAddress(customer.address);
         setEditingCustomer(customer);
 

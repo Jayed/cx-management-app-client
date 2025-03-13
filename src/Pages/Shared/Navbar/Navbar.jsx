@@ -50,6 +50,16 @@ const Navbar = () => {
                 <span className="text-cyan-900">Customers</span>
               </Link>
             </li>
+            {/* Cx vs Tx summary  */}
+            <li>
+              <Link
+                to="/cx-vs-tx-sum"
+                className="hover:text-blue-600 flex items-center"
+              >
+                <FaUsers className="font-bold text-lg text-blue-400" />
+                <span className="text-cyan-900">Cx vs Tx</span>
+              </Link>
+            </li>
             {/* Services  */}
             {/* <li className="relative group">
               <button className="hover:text-blue-600">

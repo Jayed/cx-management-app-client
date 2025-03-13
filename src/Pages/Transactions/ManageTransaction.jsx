@@ -15,10 +15,6 @@ const ManageTransaction = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [transactionType, setTransactionType] = useState("expense");
-  // const [amount, setAmount] = useState(0);
-  // const [rate, setRate] = useState(0);
-  // const [quantity, setQuantity] = useState(0);
-  // const [unitPrice, setUnitPrice] = useState(0);
   const [quantity_amount, setQuantity_amount] = useState();
   const [unitPrice_rmbRate, setUnitPrice_rmbRate] = useState();
   const [expense, setExpense] = useState(0);
@@ -53,6 +49,7 @@ const ManageTransaction = () => {
   }, [transactions, itemOffset]); // Trigger when `transactions` or `itemOffset` changes
   // console.log(transactions);
 
+  //SetPaginationVariables
   const SetPaginationVariables = () => {
     if (transactions?.length > 0) {
       const endOffset = itemOffset + itemsPerPage;
@@ -68,8 +65,6 @@ const ManageTransaction = () => {
     const newOffset = (event.selected * itemsPerPage) % transactions.length;
     setItemOffset(newOffset);
   };
-
-  // console.log("current Items: ", currentItems);
 
   // Search functionality
   useEffect(() => {
@@ -90,16 +85,22 @@ const ManageTransaction = () => {
     setFilteredTransactions(results);
   }, [searchTerm, transactions]);
 
+  // printing transactionType
+  // useEffect(() => {
+  //   console.log(transactionType);
+  // }, [transactionType]);
+
   // Calculating expense and deposit
   useEffect(() => {
     if (transactionType === "expense") {
-      setExpense(quantity_amount * unitPrice_rmbRate);
+      setExpense((parseFloat(quantity_amount) || 0) * (parseFloat(unitPrice_rmbRate) || 0));
       setDeposit(0);
     } else {
-      setDeposit(quantity_amount / unitPrice_rmbRate);
+      setDeposit((parseFloat(quantity_amount) || 0) / (parseFloat(unitPrice_rmbRate) || 0));
       setExpense(0);
     }
   }, [quantity_amount, unitPrice_rmbRate, transactionType]);
+  
 
   // handleSubmit
   const handleSubmit = async (e) => {
@@ -109,6 +110,7 @@ const ManageTransaction = () => {
       date,
       customer,
       details: description,
+      transactionType,
       quantity_amount: parseFloat(quantity_amount) || 0,
       unitPrice_rmbRate: parseFloat(unitPrice_rmbRate) || 0,
       expense: parseFloat(expense) || 0,
@@ -147,6 +149,7 @@ const ManageTransaction = () => {
           setUnitPrice_rmbRate("");
           setExpense(0);
           setDeposit(0);
+          setTransactionType("expense");
           setEditingTransaction(null);
           refetch();
         } catch (error) {
@@ -177,11 +180,18 @@ const ManageTransaction = () => {
         const formattedDate = new Date(transaction.date)
           .toISOString()
           .split("T")[0];
+
+        // Determine transactionType based on expense and deposit values
+        let updatedTransactionType = transaction.expense > 0 ? "expense" : "deposit";
+        setTransactionType(updatedTransactionType);
+
         setDate(formattedDate);
         setCustomer(transaction.customer._id);
         setDescription(transaction.details);
-        setDebit(transaction.debit);
-        setCredit(transaction.credit);
+        setQuantity_amount(transaction.quantity_amount);
+        setUnitPrice_rmbRate(transaction.unitPrice_rmbRate);
+        setExpense(transaction.expense);
+        setDeposit(transaction.deposit);
         setEditingTransaction(transaction);
 
         // Show success message (optional)
@@ -456,13 +466,6 @@ const ManageTransaction = () => {
                     <td className="px-4 py-2">
                       {tx?.unitPrice_rmbRate ?? "0"}
                     </td>
-                    {/* <td className="px-4 py-2">
-                      <span className="font-medium">
-                        {tx.expense.toLocaleString(undefined, {
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </td> */}
                     <td className="px-4 py-2">
                       <span className="font-medium">
                         {tx?.expense
@@ -473,13 +476,7 @@ const ManageTransaction = () => {
                           : "0.00"}
                       </span>
                     </td>
-                    {/* <td className="px-4 py-2">
-                      <span className="font-medium">
-                        {tx.deposit.toLocaleString(undefined, {
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </td> */}
+                    
                     <td className="px-4 py-2">
                       <span className="font-medium">
                         {tx?.deposit
